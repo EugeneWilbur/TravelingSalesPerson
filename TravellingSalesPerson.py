@@ -10,7 +10,7 @@ class Node:
 
 
 def main():
-    totalD = 0  # HA
+    totalD = 0  # haha
     nodes = []
     order = [i for i in range(280)]
     fileName = "a280.tsp"
@@ -32,24 +32,13 @@ def main():
             currentLine = line.split()
             nodes.append(Node(int(currentLine[1]), int(currentLine[2])))
 
+    for i in nodes:
+        print(i.x, i.y)
 
     best = currentTotal(nodes)
     print(currentTotal(nodes))
 
-    for i in range(10):
-        nodes = scramble(nodes)
-        print(currentTotal(nodes))
-        if currentTotal(nodes) < best:
-            best = currentTotal(nodes)
 
-    print(order)
-    print("Best: ", best)
-
-
-
-def scramble(nodes):
-    
-    return nodes
 
 def currentTotal(nodes):
     total = 0
