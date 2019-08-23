@@ -1,7 +1,9 @@
 import math
+import random
 
 SIZE = 5
 MAX = 100
+testSize = 100000
 
 class Node:
     def __init__(self, x, y):
@@ -12,8 +14,8 @@ class Node:
 def main():
     totalD = 0  # haha
     nodes = []
-    order = [i for i in range(280)]
-    fileName = "a280.tsp"
+    order = [i for i in range(52)]
+    fileName = "berlin52.tsp"
     line = ""
 
     while True:
@@ -30,26 +32,31 @@ def main():
             pass
         else:
             currentLine = line.split()
-            nodes.append(Node(int(currentLine[1]), int(currentLine[2])))
+            nodes.append(Node(float(currentLine[1]), float(currentLine[2])))
 
-    for i in nodes:
-        print(i.x, i.y)
+    best = 10000000000
+    for i in range(testSize):
+        order = shuffle(order)
+        print(order)
+        current = calcDistance(nodes, order)
+        if current < best:
+            best = current
+        print(current)
+        i += 1
 
-    best = currentTotal(nodes)
-    print(currentTotal(nodes))
+    print(best)
 
+def shuffle(order):
+    random.shuffle(order)
+    return order
 
-
-def currentTotal(nodes):
+def calcDistance(nodes, order):
     total = 0
-    for i in range(len(nodes) - 1):
-        currentDistance = calcDist(nodes[i], nodes[i+1])
+    for i in range(len(order) - 1):
+        currentDistance = math.sqrt((nodes[order[i]].x - nodes[order[i+1]].x) ** 2 + (nodes[order[i]].y - nodes[order[i+1]].y) ** 2)
         total += currentDistance
     return total
 
-
-def calcDist(curNode, nextNode):
-    return math.sqrt((curNode.x - nextNode.x) ** 2 + (curNode.y - nextNode.y) ** 2)
 
 
 if __name__ == "__main__":
