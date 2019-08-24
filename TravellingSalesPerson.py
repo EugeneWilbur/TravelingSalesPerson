@@ -3,8 +3,8 @@ import random
 
 SIZE = 5
 MAX = 100
-testSize = 100
-POPSIZE = 300
+GENERATIONS = 25
+POPSIZE = 250
 
 class Node:
     def __init__(self, x, y):
@@ -25,48 +25,44 @@ def main():
     # file i/o handled.
     fileName = "berlin52.tsp"
     nodes = nodeInput(fileName)
+    GOAT = 1000000
 
     for i in population:
         i.order = shuffle(i.order)
         i.fitness = 0
 
-    getBest(nodes, population)
+    population = setFitness(nodes, population)
 
-    #population = fixFitness(population)
+    for i in range(GENERATIONS):
+        print("Generation", i + 1)
+        if getBest(nodes, population) < GOAT:
+            GOAT = getBest(nodes, population)
+        print("Best: ", GOAT)
+        population = makeNextGen(population, nodes)
 
-    for i in range(testSize):
-        fittestOrder = Pop(0)
-        for i in population:
-            if i.fitness > fittestOrder.fitness:
-                fittestOrder = i
-        population = makeNextGen(fittestOrder, nodes)
+    print(GOAT)
 
+
+def setFitness(nodes, population):
     for i in population:
-        print(i.fitness)
-
-    print(getBest(nodes, population))
-
-
-def pickSeed(popultaion):
-    index = 0
-    r = random.randint(0, 1)
-
-    while(r > 0):
-        r = r - popultaion[index].fitness
-        index += 1
-    index -= 1
-    return popultaion[index]
+        current = calcDistance(nodes, i.order)
+        i.fitness = (1 / (current + 1)) * 1000
+    population = fixFitness(population)
+    return population
 
 
 def fixFitness(population):
-    sum = 0
-    for i in range(len(population)):
-        sum += population[i].fitness
-
-    for i in range(len(population)):
-        population[i].fitness = population[i].fitness / sum
+    fitSum = 0
+    for i in population:
+        fitSum += i.fitness
+    for i in population:
+        i.fitness = i.fitness / fitSum
     return population
 
+
+def displayPop(population):
+    for i in population:
+        print(i.fitness)
 
 def getBest(nodes, population):
     for i in range(POPSIZE):
@@ -79,14 +75,27 @@ def getBest(nodes, population):
     return best
 
 
-def makeNextGen(fittestLast, nodes):
+def pickSeed(population):
+    index = 0
+    r = random.random()
+
+    while r > 0:
+        r = r - population[index].fitness
+        index += 1
+        if index >= len(population):
+            index = 1
+    index -= 1
+    return population[index]
+
+
+def makeNextGen(population, nodes):
     nextGen = [Pop(0) for i in range(POPSIZE)]
     for i in range(POPSIZE):
-        nextGen[i].order = fittestLast.order
-        fittestLast.setFitness(fittestLast.order, nodes)
-        nextGen[i].fitness = fittestLast.fitness
-        fittestLast.order = swap(fittestLast.order)
+        nextGen[i] = pickSeed(population)
+        nextGen[i].order = swap(nextGen[i].order)
+    nextGen = setFitness(nodes, nextGen)
     return nextGen
+
 
 def swap(order):
     a = random.randint(0, (len(order) - 2))
