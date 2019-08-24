@@ -1,10 +1,11 @@
 import math
 import random
 
-SIZE = 5
+SIZE = 42
 MAX = 100
-GENERATIONS = 25
-POPSIZE = 250
+GENERATIONS = 5000
+POPSIZE = 200
+MUTATION = 1
 
 class Node:
     def __init__(self, x, y):
@@ -13,17 +14,19 @@ class Node:
 
 
 class Pop:
-    def __init__(self, fitness):
-        self.order = [i for i in range(52)]
+    def __init__(self, fitness, order):
+        self.order = order
         self.fitness = fitness
 
 
 def main():
     # Population of random orders created
-    population = [Pop(0) for i in range(POPSIZE)]
+    order = [i for i in range(SIZE)]
+    population = [Pop(0, order) for i in range(POPSIZE)]
 
     # file i/o handled.
-    fileName = "berlin52.tsp"
+    #fileName = "berlin52.tsp"
+    fileName = "myTsp12.tsp"
     nodes = nodeInput(fileName)
     GOAT = 1000000
 
@@ -62,7 +65,8 @@ def fixFitness(population):
 
 def displayPop(population):
     for i in population:
-        print(i.fitness)
+        print(i.fitness, i.order)
+
 
 def getBest(nodes, population):
     for i in range(POPSIZE):
@@ -76,7 +80,9 @@ def getBest(nodes, population):
 
 
 def pickSeed(population):
+
     index = 0
+    """
     r = random.random()
 
     while r > 0:
@@ -84,25 +90,31 @@ def pickSeed(population):
         index += 1
         if index >= len(population):
             index = 1
-    index -= 1
+    index -= 1"""
+    fittest = 0
+    for i in range(POPSIZE):
+        if population[i].fitness > fittest:
+            fittest = population[i].fitness
+            index = i
+
     return population[index]
 
 
 def makeNextGen(population, nodes):
-    nextGen = [Pop(0) for i in range(POPSIZE)]
-    for i in range(POPSIZE):
-        nextGen[i] = pickSeed(population)
-        nextGen[i].order = swap(nextGen[i].order)
+    nextGen = [Pop(0, population[i].order) for i in range(POPSIZE)]
+    for i in nextGen:
+        i.order = swap(pickSeed(population).order).copy()
     nextGen = setFitness(nodes, nextGen)
     return nextGen
 
 
 def swap(order):
-    a = random.randint(0, (len(order) - 2))
-    b = a+1
-    temp = order[a]
-    order[a] = order[b]
-    order[b] = temp
+    for i in range(MUTATION):
+        a = random.randint(0, (len(order) - 2))
+        b = a+1
+        temp = order[a]
+        order[a] = order[b]
+        order[b] = temp
     return order
 
 
