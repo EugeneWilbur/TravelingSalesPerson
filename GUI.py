@@ -1,6 +1,7 @@
 from TravellingSalesPerson import *
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
 
 try:
@@ -11,24 +12,52 @@ except ImportError:
 
 class myGUI(wx.Frame):
     def __init__(self, parent, id, title):
-        wx.Frame.__init__(self, parent, id, title)
-        self. parent = parent
+        wx.Frame.__init__(self, parent, id, title, size=(600, 500))
+        self.parent = parent
         self.pnl = wx.Panel(self)
-        self.fileBox = wx.TextCtrl(self.pnl, style=wx.TE_PROCESS_ENTER, pos=(10, 50), size=(75, 25))
+        fileBox = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(75, 25))
 
-        self.st = wx.StaticText(self.pnl, label="TSP Solver", pos=(5, 5))
-        font = self.st.GetFont()
-        font.PointSize += 10
-        self.st.SetFont(font)
+        fileName = wx.StaticText(self.pnl, label="File: ")
+        font = fileName.GetFont()
+        font.PointSize += 3
+        fileName.SetFont(font)
 
-        add = wx.Button(self.pnl, pos=(10, 100), label="Add")
+
+
+        #self.fig = plt.figure()
+        #plt.plot([(2, 2), (3, 3)])
+        # self.axes = self.fig.add_subplot(111)
+       #self.canvas = FigureCanvas(self, -1, self.fig)
+        # self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # self.sizer.Add(self.canvas, 1, wx.BOTTOM)
+        # self.SetSizerAndFit(self.sizer)
+
+        add = wx.Button(self, label="Add")
         self.Bind(wx.EVT_BUTTON, self.onButton, add)
-        fetch = wx.Button(self.pnl, pos=(105, 100), label="Fetch")
+        fetch = wx.Button(self, label="Fetch")
         self.Bind(wx.EVT_BUTTON, self.onButton, fetch)
-        solve = wx.Button(self.pnl, pos=(200, 100), label="Solve")
+        solve = wx.Button(self, label="Solve")
         self.Bind(wx.EVT_BUTTON, self.onButton, solve)
-        show = wx.Button(self.pnl, pos=(295, 100), label="Show")
+        show = wx.Button(self, label="Show")
         self.Bind(wx.EVT_BUTTON, self.onButton, show)
+
+
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        #buttonSizer = wx.GridSizer(4, 2, 0)
+        #buttonSizer.Add(self.canvas)
+
+        buttonSizer.Add(fileName, 0)
+        ###buttonSizer.Add(10, 0, 0)
+        buttonSizer.Add(fileBox, 0)
+        buttonSizer.Add(add, 0)
+        buttonSizer.Add(solve, 0)
+        buttonSizer.Add(fetch, 0)
+        buttonSizer.Add(show, 0)
+
+        self.SetSizer(buttonSizer)
+        #sizer.Add(buttonSizer, proportion=1)
+
+        #self.SetSizerAndFit(sizer)
 
         self.Show(True)
 
@@ -53,6 +82,7 @@ class myGUI(wx.Frame):
             x = np.array(list1)
             y = np.array(list2)
             plt.plot(x, y)
+
             plt.show()
             print("Fetch Successful.")
         elif button.GetLabel() == "Solve":
@@ -70,6 +100,10 @@ class myGUI(wx.Frame):
                 list2.append(j)
             plt.plot(list1, list2, "ob")
             plt.show()
+
+class MyPanel(wx.Panel):
+    def __init__(self, parent):
+        super(MyPanel, self).__init__(parent)
 
 
 if __name__ == "__main__":
