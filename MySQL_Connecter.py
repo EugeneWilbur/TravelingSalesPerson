@@ -15,9 +15,9 @@ def main(arg1, arg2, arg3):
     dist = 0
 
     try:
-        connection = mysql.connector.connect(host='mysql.ict.griffith.edu.au',
-                                         user='s5130828',
-                                         password='aSPYbvce',
+        connection = mysql.connector.connect(host='Host',
+                                         user='User',
+                                         password='Pass',
                                             database=DBNAME)
         if connection.is_connected():
             cursor = connection.cursor()
